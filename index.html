@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    
+    <button id="btn" type="button"  >signin</button>
+    <h1 id="greet">hi , user , how are you ..</h1>
+    <form>
+        <label for="email">Enter your email :</label>
+        <input type="email" id="email"><br><br>
+        <label for="password">Enter the password :</label>
+        <input type="password" id="password"><br><br>
+        <button id="btn2" type="button">login</button>
+        <button type="button" id="btn3">signup</button>
+    </form>
+    <button id="btn4" type="button">Login with google</button>
+
+
+
+
+    <script type="module">
+////////////////////importing  the firebase app in the project
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+////////////////////importing auth method of firebase.
+        import {getAuth, createUserWithEmailAndPassword ,signInWithEmailAndPassword ,signOut, GoogleAuthProvider, signInWithPopup} from "https://www.gstatic.com/firebasejs/9.14.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA50iLALuQyHi_gEoG3BMFVbpgNvG1iOpA",
+            authDomain: "st-project-901e1.firebaseapp.com",
+            projectId: "st-project-901e1",
+            storageBucket: "st-project-901e1.appspot.com",
+            messagingSenderId: "896301512467",
+            appId: "1:896301512467:web:c5376c75b8219850310ce6"
+        };
+///////////////////initilizing the furebase app and auth service method .
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+      
+
+
+        btn3.addEventListener('click', (e) => {
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    alert('user created successfully');
+                    document.getElementById('greet').innerText = `hello , ${email}  ` ;
+                    document.getElementById('email').value = null ;
+                    document.getElementById('password').value = null ;
+                    signInWithEmailAndPassword(auth , email ,password)
+                    .then((userCredential) =>{
+                        const user = userCredential.user ;
+                        alert(`you are signed in by email id ${email}`) ;
+                        btn.innerText = 'signout' ;
+                        
+                    })
+                    .catch((error)=>{
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        alert('errorMessage');
+                    })
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert('errorMessage');
+                });
+
+        })
+        btn.addEventListener('click' ,(e)=>{
+            
+            signOut(auth).then(() => {
+                 alert('you are signed out') ;
+                 btn.innerText = 'signin'
+                 document.getElementById('greet').innerText = "hi , user , how are you .."
+
+           }).catch((error) => {
+             alert(error) ;
+           });
+        })
+
+        btn2.addEventListener('click', (e) => {
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+
+                    signInWithEmailAndPassword(auth , email ,password)
+                    .then((userCredential) =>{
+                        const user = userCredential.user ;
+                        alert(`you are logged in by email id ${email}`) ;
+                        btn.innerText = 'logout' ;
+                        document.getElementById('greet').innerText = `hello , ${email}  ` ;
+                    document.getElementById('email').value = null ;
+                    document.getElementById('password').value = null ;
+                        
+                    })
+                    .catch((error)=>{
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        alert('errorMessage');
+                    })
+            
+
+        })
+
+
+       btn4.addEventListener('click' ,(e)=>{
+
+
+        signInWithPopup(auth, provider)
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    // The signed-in user info.
+    const user = result.user;
+    // ...
+    document.getElementById('greet').innerText = ``
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
+       })
+
+
+    </script>
+
+
+
+
+</body>
+
+</html>
